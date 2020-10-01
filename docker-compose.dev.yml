@@ -84,6 +84,22 @@ services:
     image: tianon/true
     networks:
       - shellhub
+  tests:
+    image: tests
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+      target: development
+    volumes:
+      - ./pkg:/go/src/github.com/shellhub-io/shellhub/pkg
+    networks:
+      - shellhub
+    depends_on:
+      - mongo
+      - api
+      - ssh
+      - ui
+      - gateway
 
 networks:
   shellhub:
