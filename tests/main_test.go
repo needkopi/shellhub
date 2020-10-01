@@ -1,4 +1,4 @@
- package main
+package main
 
 import (
 	//	"fmt"
@@ -55,7 +55,7 @@ func testAPI(e *httpexpect.Expect) {
 
 	token := r.Value("token").String().Raw()
 	tenant := r.Value("tenant").String().Raw()
-
+	_ = tenant
 	/*s := e.GET("/api/auth/user").WithHeader("Authorization", "Bearer "+token).
 		Expect().
 		Status(http.StatusOK).JSON().Object()
