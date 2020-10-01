@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -115,6 +116,7 @@ func (s *service) AuthUser(ctx context.Context, req models.UserAuthRequest) (*mo
 	}
 
 	password := sha256.Sum256([]byte(req.Password))
+	fmt.Printf("username %s password %s", req.Username, req.Password)
 	if user.Password == hex.EncodeToString(password[:]) {
 		token := jwt.NewWithClaims(jwt.SigningMethodRS256, models.UserAuthClaims{
 			Username: user.Username,

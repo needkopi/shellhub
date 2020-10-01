@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/shellhub-io/shellhub/api/store"
@@ -61,14 +62,23 @@ func (s *service) DeleteDevice(ctx context.Context, uid models.UID, tenant strin
 }
 
 func (s *service) RenameDevice(ctx context.Context, uid models.UID, name, tenant string) error {
+	fmt.Printf("tenant: %s", tenant)
+	fmt.Println("rename service 1")
 	device, _ := s.store.GetDeviceByUID(ctx, uid, tenant)
+	fmt.Println("rename service 2")
+	fmt.Printf("%+v", device)
 	validate := validator.New()
 	name = strings.ToLower(name)
+	fmt.Printf("\n rename service 3 %s\n", name)
 	if device != nil {
+		fmt.Println("rename service 4")
 		if device.Name != name {
+			fmt.Println("rename service 5")
 			device.Name = name
 			if err := validate.Struct(device); err == nil {
+				fmt.Println("rename service 6")
 				otherDevice, _ := s.store.GetDeviceByName(ctx, name, tenant)
+				fmt.Println("\nrename service 6 %+v", otherDevice)
 				if otherDevice == nil {
 					return s.store.RenameDevice(ctx, uid, name)
 				}

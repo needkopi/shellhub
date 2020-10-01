@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -95,7 +96,7 @@ func RenameDevice(c apicontext.Context) error {
 	}
 
 	svc := deviceadm.NewService(c.Store())
-
+	fmt.Println("ESTOU NO RENAME")
 	if err := svc.RenameDevice(c.Ctx(), models.UID(c.Param("uid")), req.Name, tenant); err != nil {
 		if err == deviceadm.ErrUnauthorized {
 			return c.NoContent(http.StatusForbidden)
