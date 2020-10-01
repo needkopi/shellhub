@@ -1,4 +1,4 @@
-package main
+ package main
 
 import (
 	//	"fmt"
@@ -83,7 +83,7 @@ func testAPI(e *httpexpect.Expect) {
 		JSON().Object()
 	t.Keys().ContainsOnly("name", "namespace", "token", "uid")
 	t.Value("name").Equal("mac")
-	t.Value("namespace").Equal("edu")
+	t.Value("namespace").Equal("username")
 	uid := t.Value("uid").String().Raw()
 
 	u := e.GET(fmt.Sprintf("/api/devices/%s", uid)).
@@ -103,7 +103,7 @@ func testAPI(e *httpexpect.Expect) {
 			"version":     "test",
 		},
 		"name":       "mac",
-		"namespace":  "edu",
+		"namespace":  "username",
 		"public_key": "key",
 		"status":     "pending",
 		"tenant_id":  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -142,6 +142,30 @@ func testAPI(e *httpexpect.Expect) {
 		Status(http.StatusOK)
 	_ = x
 
+	// Test for public session routes
+	//set a session uid that exists
+	uid_session := "b1efa6dbcdefcb03629628d61e5d74da7647dd1c14126e537f53451afd805c1f"
+	su := e.GET(fmt.Sprintf("/api/sessions/%s", uid_session)).
+		WithHeader("Authorization", "Bearer "+token).
+		Expect().
+		Status(http.StatusOK).
+		JSON().Object()
+	su.Value("authenticated").Equal(true)
+
+	spu := e.GET(fmt.Sprintf("/api/sessions/%s/play", uid_session)).
+		WithHeader("Authorization", "Bearer "+token).
+		Expect().
+		Status(http.StatusOK).
+		JSON().Array()
+	spu.First().Object().Value("width").Equal(110)
+
+	array_sessions := e.GET("/api/sessions").
+		WithHeader("Authorization", "Bearer "+token).
+		Expect().
+		Status(http.StatusOK).
+		JSON().Array()
+	fmt.Println(array_sessions)
+
 	/*e.GET(fmt.Sprintf("/internal/token/%s", tenant)).
 			Expect().
 			Status(http.StatusOK)
@@ -174,7 +198,7 @@ func TestEchoClient(t *testing.T) {
 
 	e := httpexpect.WithConfig(httpexpect.Config{
 		// prepend this url to all requests
-		BaseURL: "http://api:8080",
+		BaseURL: "http://localhost/",
 
 		// use http.Client with a cookie jar and timeout
 		Client: &http.Client{
