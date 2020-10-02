@@ -167,13 +167,60 @@ func testAPI(e *httpexpect.Expect) {
 		JSON().Array()
 	spu.First().Object().Value("width").Equal(110)
 
-	array_sessions := e.GET("/api/sessions").
+	array = e.GET("/api/sessions").
 		WithHeader("Authorization", "Bearer "+token).
 		Expect().
 		Status(http.StatusOK).
 		JSON().Array()
-	fmt.Println(array_sessions)
+	fmt.Println(array)
 
+	// public tests for stats
+	array = e.GET("/api/stats").
+		WithHeader("Authorization", "Bearer "+token).
+		Expect().
+		Status(http.StatusOK).
+		JSON().Array()
+	fmt.Println(array)
+
+	//public tests for change username
+
+	status_array := []int{http.StatusOK, http.StatusOK, http.StatusConflict, http.StatusUnauthorized}
+
+	forms_array := []interface{}{
+		map[string]interface{}{ // successfull email and username change
+			"username": "newusername",
+			"email": "new@email.com",
+			"currentPassword": "",
+			"newPassword": "",
+		},
+		map[string]interface{}{ // successfull password change
+			"username": "",
+			"email": "",
+			"currentPassword": "password",
+			"newPassword": "new_password_hash",
+		},
+		map[string]interface{}{ //conflict
+			"username": "username",
+			"email": "new@email.com",
+			"currentPassword": "",
+			"newPassword": "",
+		},
+		map[string]interface{}{ // unauthorized
+			"username": "",
+			"email": "",
+			"currentPassword": "wrong_password",
+			"newPassword": "new_password",
+		},
+	}
+	var n *httpexpect.Expect //fix type
+	for i, v := range forms_array{
+		n = e.PUT(fmt.Sprintf("/api/user")).
+			WithHeader("Authorization", "Bearer "+token).
+			WithJSON(v).
+			Expect().
+			Status(status_array[i])
+		fmt.Println(n)
+	}
 	/*e.GET(fmt.Sprintf("/internal/token/%s", tenant)).
 			Expect().
 			Status(http.StatusOK)
