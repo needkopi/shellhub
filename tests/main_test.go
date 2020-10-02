@@ -200,7 +200,7 @@ func testAPI(e *httpexpect.Expect) {
 			"newPassword":     "new_password_hash",
 		},
 		map[string]interface{}{ //conflict
-			"username":        "username",
+			"username":        "username2",
 			"email":           "new@email.com",
 			"currentPassword": "",
 			"newPassword":     "",
