@@ -188,33 +188,33 @@ func testAPI(e *httpexpect.Expect) {
 
 	forms_array := []interface{}{
 		map[string]interface{}{ // successfull email and username change
-			"username": "newusername",
-			"email": "new@email.com",
+			"username":        "newusername",
+			"email":           "new@email.com",
 			"currentPassword": "",
-			"newPassword": "",
+			"newPassword":     "",
 		},
 		map[string]interface{}{ // successfull password change
-			"username": "",
-			"email": "",
+			"username":        "",
+			"email":           "",
 			"currentPassword": "password",
-			"newPassword": "new_password_hash",
+			"newPassword":     "new_password_hash",
 		},
 		map[string]interface{}{ //conflict
-			"username": "username",
-			"email": "new@email.com",
+			"username":        "username",
+			"email":           "new@email.com",
 			"currentPassword": "",
-			"newPassword": "",
+			"newPassword":     "",
 		},
 		map[string]interface{}{ // unauthorized
-			"username": "",
-			"email": "",
+			"username":        "",
+			"email":           "",
 			"currentPassword": "wrong_password",
-			"newPassword": "new_password",
+			"newPassword":     "new_password",
 		},
 	}
-	var n *httpexpect.Expect //fix type
-	for i, v := range forms_array{
-		n = e.PUT(fmt.Sprintf("/api/user")).
+	//var n *httpexpect.Expect //fix type
+	for i, v := range forms_array {
+		n := e.PUT("/api/user").
 			WithHeader("Authorization", "Bearer "+token).
 			WithJSON(v).
 			Expect().
@@ -253,7 +253,7 @@ func TestEchoClient(t *testing.T) {
 
 	e := httpexpect.WithConfig(httpexpect.Config{
 		// prepend this url to all requests
-		BaseURL: "http://localhost/",
+		BaseURL: "http://api:8080/",
 
 		// use http.Client with a cookie jar and timeout
 		Client: &http.Client{
